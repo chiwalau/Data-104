@@ -1,3 +1,8 @@
 theme: jekyll-theme-slate
 title: Welcome to Henry's homepage!
 descciption: I am a student in Golden Gate University. This page will contain projects in my courses.
+url: https://chiwalau.github.io/Data-104/
+author: Henry Lau
+plugins:
+  - jekyll-seo-tag
+google_analytics:'UA-179014550-1'
