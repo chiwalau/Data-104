@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2020-11-17T21:31:52.253Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.193 Safari/537.36" etag="uI67PHV5ACAhZ4Yv5IIK" version="13.9.9" type="github">
+<mxfile host="app.diagrams.net" modified="2020-11-17T21:33:46.285Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.193 Safari/537.36" etag="QXfFYzB6lHN5LFfem7-d" version="13.9.9" type="github">
   <diagram id="oE03VJ6OHy6L4HkjCSVk" name="Page-1">
-    <mxGraphModel dx="1113" dy="693" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="2365" dy="1473" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -1054,6 +1054,9 @@
               <mxPoint x="30" y="430" />
             </Array>
           </mxGeometry>
+        </mxCell>
+        <mxCell id="as-oZi2KTo7DUfvbDNFW-479" value="Figure 2. ER Diagram with field types" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=22;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="980" width="380.5" height="100" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
