@@ -1,0 +1,171 @@
+---
+title: "Google Studio HOA & R Programming"
+author: "Chi Wa Lau"
+data: October 16, 2020
+output:
+  pdf_document: default
+  html_document:
+    code_folding: show
+    df_print: paged
+---
+## Programming exercise
+
+### 1) Read the dataset generated from Google Analytics Custom Report
+Here we specify the sheet to read from (Dataset1)
+```{r}
+library(dplyr, warn.conflicts = FALSE)
+library(readxl)
+library(tidyr)
+
+df <- read_excel('Social Media Revenue.xlsx', 'Dataset1')
+df <- df %>%
+  rename(social_media = 'Social Network') %>%
+  rename_all(tolower) %>%
+  drop_na()
+```
+```{r}
+# check the structure of the dataframe
+df
+```
+```{r}
+# drop (not set)
+df = df[-1,]
+```
+
+### 2) Perform data translations:
+- add these columns. (hint: use mutate) Observe values are percentrages!
+
+  **session_share** = sessions / sum(sessions),
+  </br>**sales_share** = transactions / sum(transactions),
+  </br>**revenue_share** = revenue / sum (revenue)
+
+- Rename transcations to sales
+- Then sort by **session_share** in descending order.
+
+#### Add columns
+```{r}
+df <- mutate(df, session_share = sessions / sum(sessions))
+df <- mutate(df, sales_share = transactions / sum(transactions))
+df <- mutate(df, revenue_share = revenue / sum (revenue))
+```
+#### Rename transaction to sales
+```{r}
+colnames(df)[2] <- "sales"
+```
+#### Sort by **session_share** in descending order.
+```{r}
+df<- df %>% 
+  arrange(desc(df$session_share))
+df
+```
+### 3) Show the structure, contents and summary of the transformed data frame.
+```{r}
+# show the structure
+str(df)
+```
+#### Show the content
+```{r}
+# top 6
+head(df)
+```
+7 sales were made in four social media plaforms: YouTube, Twitter, Facebook, and Google Groups.
+```{r}
+# bottom 6
+tail(df)
+```
+#### Show the summary
+```{r}
+summary(df)
+```
+* the revenue comparing to the number of users is relatively small.
+* the average revenue is $31.36 from 19,679 visitors.
+* 19,679 visitors created 21,028 sessions.
+* The session_share, sales_share, and revenue_share work only for the four social media platforms that contain sales.
+
+### 4) Plot session_share vs sales_share by social media
+This plot shows the relationship between sessions vs sales (as a percentage of total) for each social media, even those which did not produce any sales. That is, do not perform any filtering.
+
+Describe insights gained from the visualization.
+
+```{r}
+# plot graph
+library(ggplot2)
+library(ggrepel)
+library(scales)
+
+ggplot(df, aes(x=session_share, y=sales_share)) +
+  geom_point(aes(color=social_media)) +
+  scale_x_continuous(labels=percent) +
+  scale_y_continuous(labels=percent) +
+  geom_label_repel(aes(label=social_media),
+                   point.padding = unit(1.5, 'lines'), 
+                   segment.color = "grey50") +
+  ggtitle("Share of Session vs Sales by Social Media") +
+  xlab("Session") +
+  ylab("Sales") + 
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+- YouTube, Facebook, and Twitter made the highest number of sales. However, YouTube has significantly high number of sessions. Following by Twitter and Facebook the second and third places.
+- Google made the second number of sales and the number of session is smaller than Facebook.
+- All other social media plaforms made no sales.
+
+### 5) Create the same plot above, but this time, filter the data set to only show observations with **sales > 0**. 
+```{r}
+# dataframe with sales > 0
+df_with_sales <-df[!(df$sales==0),]
+```
+```{r}
+# plot graph
+ggplot(df_with_sales, aes(x=session_share, y=sales_share)) +
+  geom_point(aes(color=social_media)) +
+  scale_x_continuous(labels=percent) +
+  scale_y_continuous(labels=percent) +
+  geom_label_repel(aes(label=factor(social_media), 
+                       fill=social_media,), 
+                   point.padding = unit(1.1, 'lines'), 
+                   segment.color = "grey50") +
+  guides(fill = guide_legend(override.aes = aes(label = ""))) +
+  ggtitle("Share of Session vs Sales by Social Media") +
+  xlab("Session") +
+  ylab("Sales") + 
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+#### Describe insights from the visualization. How does this report compare to the GA report?
+- The line graph in the GA report failed to tell the importance relationship between social media, sessions, and revenue.
+- This RStudio graph provides better visualization to tell the relationship of them. With the removal of zero sales data. The graph is better in showing relevant data point that the read will concerns - sales.
+
+### 6) Create another visualizsation of your choice for key metrics, such as **conversion rate**. Consider session versus user for determining conversion rate.
+
+**Background**: In GA, users are the number of unique visitors to a site. Someone visiting a site 10 times on the same device or browser is still counted as one user. GA counts these repeat customers as Returning Users. However, if a user visits a site, deletes their browser cookies, and returns afterwards, they are now counted as New User.
+
+Sessions in GA are in the total number of visits to a site, both new and repeat visits. Sessions should be the same or higher than users.
+
+Since "users" is the unique number, I will use it to calculate the conversion rate.
+
+users conversion rate = (sales / users)*100
+```{r}
+# add column for user conversion rate
+df_conver <- mutate(df_with_sales, user_conver = (sales/users)*100)
+# round up user conversion rate
+df_conver$user_conver <- format(round(df_conver$user_conver, 3), nsmall = 3)
+df_conver
+```
+```{r}
+# plot graph
+ggplot(df_conver, aes(x=social_media, y=user_conver)) +
+  geom_bar(stat = "identity", aes(fill=social_media)) +
+  geom_text(aes(x=social_media, y=user_conver, label=user_conver),
+            vjust=-0.5) +
+  scale_fill_brewer(palette="Set3") +
+  ggtitle("User Conversation Rate by Social Media") +
+  xlab("Social Media") +
+  ylab("Conversion Rate") + 
+  labs(fill = "Social Media") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+- Google Group has the highest user conversion rate (0.93%) among all social media. It also has the lowest number of users (1,070). 
+- YouTube has the lowest user conversion rate (0.01%), and highest number of users (19,679).
+- The result showed that Google Group is the most effective social media to bring in sales.
